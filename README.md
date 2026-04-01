@@ -20,7 +20,7 @@ _Add screenshots, gifs, or demo images here if applicable._
 ### Clone
 
 ```bash
-git clone https://github.com/AurickMiklet/your-repo.git
+git clone https://github.com/AurickMikleton/MicroSeismic.git
 cd your-repo
 ```
 
