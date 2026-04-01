@@ -41,7 +41,7 @@ def plot_stead_samples_vs_trace(
     traces = downscale_by_averaging(traces, downscale_factor)
     traces = np.rot90(traces)
 
-    plot_heatmap(traces, cmap, component)
+    plot_heatmap(traces, cmap)
 
 def downscale_by_averaging(traces, factor):
     n_traces, n_samples = traces.shape
@@ -49,7 +49,7 @@ def downscale_by_averaging(traces, factor):
     traces = traces[:, :trimmed_len]
     return traces.reshape(n_traces, trimmed_len // factor, factor).mean(axis=2)
 
-def plot_heatmap(traces, cmap="seismic", component=2):
+def plot_heatmap(traces, cmap="seismic"):
     plt.figure(figsize=(12, 8))
     plt.imshow(
         traces,
@@ -62,7 +62,7 @@ def plot_heatmap(traces, cmap="seismic", component=2):
     plt.colorbar(label="Amplitude")
     plt.xlabel("Trace Number")
     plt.ylabel("Sample Number")
-    plt.title(f"Samples vs Trace Number (component={component}, traces={traces.shape[0]})")
+    plt.title(f"Samples vs Trace Number (traces={traces.shape[0]})")
     plt.tight_layout()
     plt.show()
 
