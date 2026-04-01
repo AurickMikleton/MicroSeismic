@@ -41,6 +41,8 @@ def plot_stead_samples_vs_trace(
     traces = downscale_by_averaging(traces, downscale_factor)
     traces = np.rot90(traces)
 
+    print(type(traces))
+
     plot_heatmap(traces, cmap)
 
 def downscale_by_averaging(traces, factor):
@@ -58,12 +60,22 @@ def plot_heatmap(traces, cmap="seismic"):
         interpolation="nearest",
         cmap=cmap
     )
+
+    plt.axis('off')
+    plt.savefig("cv_data/output.png",
+                bbox_inches='tight',
+                pad_inches=0,
+                transparent=True
+                ) # TODO remove path hardcode
+    plt.axis('on')
+
     plt.gca().invert_yaxis()
     plt.colorbar(label="Amplitude")
     plt.xlabel("Trace Number")
     plt.ylabel("Sample Number")
     plt.title(f"Samples vs Trace Number (traces={traces.shape[0]})")
     plt.tight_layout()
+
     plt.show()
 
 if __name__ == "__main__":
