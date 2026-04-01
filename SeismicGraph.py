@@ -37,8 +37,20 @@ def plot_stead_samples_vs_trace(
 
     min_len = min(len(tr) for tr in traces)
     traces = np.stack([tr[:min_len] for tr in traces], axis=0)
+
+    traces = downscale_by_averaging(traces, 10) # downscale by factor of 10
+
     traces = np.rot90(traces)
 
+    plot_heatmap(traces, cmap, component)
+
+def downscale_by_averaging(traces, factor):
+    n_traces, n_samples = traces.shape
+    trimmed_len = (n_samples // factor) * factor
+    traces = traces[:, :trimmed_len]
+    return traces.reshape(n_traces, trimmed_len // factor, factor).mean(axis=2)
+
+def plot_heatmap(traces, cmap="seismic", component=2):
     plt.figure(figsize=(12, 8))
     plt.imshow(
         traces,
@@ -53,7 +65,6 @@ def plot_stead_samples_vs_trace(
     plt.title(f"Samples vs Trace Number (component={component}, traces={traces.shape[0]})")
     plt.tight_layout()
     plt.show()
-
 
 if __name__ == "__main__":
     plot_stead_samples_vs_trace(
