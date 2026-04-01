@@ -11,6 +11,7 @@ def plot_stead_samples_vs_trace(
     max_traces=200,
     category=None,
     normalize_each_trace=True,
+    downscale_factor=10,
     cmap="seismic"
 ):
     df = pd.read_csv(csv_path)
@@ -37,9 +38,7 @@ def plot_stead_samples_vs_trace(
 
     min_len = min(len(tr) for tr in traces)
     traces = np.stack([tr[:min_len] for tr in traces], axis=0)
-
-    traces = downscale_by_averaging(traces, 10) # downscale by factor of 10
-
+    traces = downscale_by_averaging(traces, downscale_factor)
     traces = np.rot90(traces)
 
     plot_heatmap(traces, cmap, component)
@@ -59,6 +58,7 @@ def plot_heatmap(traces, cmap="seismic", component=2):
         interpolation="nearest",
         cmap=cmap
     )
+    plt.gca().invert_yaxis()
     plt.colorbar(label="Amplitude")
     plt.xlabel("Trace Number")
     plt.ylabel("Sample Number")
@@ -71,7 +71,8 @@ if __name__ == "__main__":
         hdf5_path="data/chunk2.hdf5",
         csv_path="data/chunk2.csv",
         component=2,
-        max_traces=300,
+        max_traces=3000,
         category="earthquake_local", # or "noise" only applicable for merge dataset
-        normalize_each_trace=True
+        normalize_each_trace=True,
+        downscale_factor=10
     )
