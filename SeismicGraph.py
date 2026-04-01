@@ -4,87 +4,95 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def plot_stead_samples_vs_trace(
-    hdf5_path,
-    csv_path,
-    component=2,
-    max_traces=200,
-    category=None,
-    normalize_each_trace=True,
-    downscale_factor=10,
-    cmap="seismic"
-):
-    df = pd.read_csv(csv_path)
-
-    if category is not None:
-        df = df[df["trace_category"] == category]
-
-    trace_names = df["trace_name"].dropna().tolist()[:max_traces]
-
-    traces = []
-
-    with h5py.File(hdf5_path, "r") as f:
-        for trace_name in trace_names:
-            ds_path = f"data/{trace_name}"
-            data = np.array(f[ds_path])
-            tr = data[:, component].astype(np.float32)
-
-            if normalize_each_trace:
-                max_abs = np.max(np.abs(tr))
-                if max_abs > 0:
-                    tr = tr / max_abs
-
-            traces.append(tr)
-
-    min_len = min(len(tr) for tr in traces)
-    traces = np.stack([tr[:min_len] for tr in traces], axis=0)
-    traces = downscale_by_averaging(traces, downscale_factor)
-    traces = np.rot90(traces)
-
-    print(type(traces))
-
-    plot_heatmap(traces, cmap)
-
 def downscale_by_averaging(traces, factor):
     n_traces, n_samples = traces.shape
     trimmed_len = (n_samples // factor) * factor
     traces = traces[:, :trimmed_len]
     return traces.reshape(n_traces, trimmed_len // factor, factor).mean(axis=2)
 
-def plot_heatmap(traces, cmap="seismic"):
-    plt.figure(figsize=(12, 8))
-    plt.imshow(
-        traces,
-        aspect="auto",
-        origin="lower",
-        interpolation="nearest",
-        cmap=cmap
-    )
+def load_component_matrix(hdf5_path, csv_path, component, max_traces=200, category=None):
+    df = pd.read_csv(csv_path)
 
-    plt.axis('off')
+    if category is not None:
+        df = df[df["trace_category"] == category]
+
+    trace_names = df["trace_name"].dropna().tolist()[:max_traces]
+    traces = []
+
+    with h5py.File(hdf5_path, "r") as f:
+        for trace_name in trace_names:
+            key = f"data/{trace_name}"
+
+            data = np.array(f[key], dtype=np.float32)
+            if data.ndim != 2 or data.shape[1] < 3:
+                continue
+
+            tr = data[:, component]
+            m = np.max(np.abs(tr))
+            if m > 0:
+                tr = tr / m
+
+            traces.append(tr)
+
+    if not traces:
+        raise ValueError("No valid traces loaded.")
+
+    min_len = min(len(tr) for tr in traces)
+    traces = np.stack([tr[:min_len] for tr in traces], axis=0)
+    return traces
+
+def plot_heatmap(e, n, z):
+    plt.figure(figsize=(12, 8))
+
+    plt.imshow(e, aspect="auto", origin="lower", cmap="Reds", alpha=0.35)
+    plt.imshow(n, aspect="auto", origin="lower", cmap="Greens", alpha=0.35)
+    plt.imshow(z, aspect="auto", origin="lower", cmap="Blues", alpha=0.35)
+
+    plt.axis("off")
     plt.savefig("cv_data/output.png",
-                bbox_inches='tight',
+                bbox_inches="tight",
                 pad_inches=0,
                 transparent=True
                 ) # TODO remove path hardcode
-    plt.axis('on')
+    plt.axis("on")
 
+    plt.xlabel("Sample Number")
+    plt.ylabel("Trace Number")
     plt.gca().invert_yaxis()
-    plt.colorbar(label="Amplitude")
-    plt.xlabel("Trace Number")
-    plt.ylabel("Sample Number")
-    plt.title(f"Samples vs Trace Number (traces={traces.shape[0]})")
+    plt.title(f"Samples vs Trace Number")
     plt.tight_layout()
-
     plt.show()
 
+def plot_overlay_components(
+    hdf5_path,
+    csv_path,
+    max_traces=200,
+    category=None,
+    downscale_factor=1,
+):
+    # e = East - West ground motion -> red
+    # n = North - South ground motion -> green
+    # z = Up - Down ground motion -> blue
+    e = load_component_matrix(hdf5_path, csv_path, component=0, max_traces=max_traces, category=category)
+    n = load_component_matrix(hdf5_path, csv_path, component=1, max_traces=max_traces, category=category)
+    z = load_component_matrix(hdf5_path, csv_path, component=2, max_traces=max_traces, category=category)
+
+    if downscale_factor > 1:
+        e = downscale_by_averaging(e, downscale_factor)
+        n = downscale_by_averaging(n, downscale_factor)
+        z = downscale_by_averaging(z, downscale_factor)
+
+    e = np.rot90(e)
+    n = np.rot90(n)
+    z = np.rot90(z)
+
+    plot_heatmap(e, n, z)
+
 if __name__ == "__main__":
-    plot_stead_samples_vs_trace(
+    plot_overlay_components(
         hdf5_path="data/chunk2.hdf5",
         csv_path="data/chunk2.csv",
-        component=2,
-        max_traces=3000,
+        max_traces=300,
         category="earthquake_local", # or "noise" only applicable for merge dataset
-        normalize_each_trace=True,
         downscale_factor=10
     )
