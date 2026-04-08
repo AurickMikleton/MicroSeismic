@@ -14,7 +14,6 @@ transform = transforms.Compose([
 dataset = datasets.ImageFolder(data_folder, transform=transform)
 loader = DataLoader(dataset, batch_size=32, shuffle=True)
 
-print("Classes:", dataset.classes)
 
 for images, labels in loader:
     print(images.shape)   # [Batch Size, Colors, Height, Width]
@@ -55,7 +54,7 @@ def print_sizes(model, input_tensor):
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.01)
 
-epochs = 5
+epochs = 1
 
 for epoch in range(epochs):
     model.train()
@@ -64,7 +63,7 @@ for epoch in range(epochs):
     for images, labels in loader:
         optimizer.zero_grad()
 
-        print_sizes(model, images)
+        #print_sizes(model, images)
         outputs = model(images)
 
         loss = criterion(outputs, labels)
@@ -73,9 +72,22 @@ for epoch in range(epochs):
         optimizer.step()
 
         running_loss += loss.item()
+        print(loss.item())
 
     print(f"Epoch {epoch+1}/{epochs}, Loss: {running_loss / len(loader)}")
 
+
+# test
+
+model.eval()
+with torch.no_grad():
+    images, labels = next(iter(loader))
+    outputs = model(images)
+    preds = torch.argmax(outputs, dim=1)
+
+    print(dataset.class_to_idx)
+    print("Predictions:", preds)
+    print("Actual labels:", labels)
 
 
 
