@@ -28,13 +28,97 @@ def load_segy(path: str | Path, ignore_geometry: bool = True) -> tuple[np.ndarra
     return data, time_axis_s, dt_s
 
 
-def apply_time_window(data: np.ndarray, time_axis_s: np.ndarray, tmin: float | None, tmax: float | None):
-    mask = np.ones_like(time_axis_s, dtype=bool)
-    if tmin is not None:
-        mask &= time_axis_s >= tmin
-    if tmax is not None:
-        mask &= time_axis_s <= tmax
-    return data[:, mask], time_axis_s[mask]
+def chunk_matrix(
+    traces, 
+    trace_chunk_size, 
+    sample_chunk_size,
+    trace_step,
+    sample_step
+):
+    n_traces, n_samples = traces.shape
+
+    if trace_step is None:
+        trace_step = trace_chunk_size
+    if sample_step is None:
+        sample_step = sample_chunk_size
+
+    chunks = []
+
+    for trace_start in range(0, n_traces - trace_chunk_size + 1, trace_step):
+        trace_end = trace_start + trace_chunk_size
+
+        for sample_start in range(0, n_samples - sample_chunk_size + 1, sample_step):
+            sample_end = sample_start + sample_chunk_size
+
+            chunk = traces[trace_start:trace_end, sample_start:sample_end]
+
+            chunks.append({
+                "trace_start": trace_start,
+                "trace_end": trace_end,
+                "sample_start": sample_start,
+                "sample_end": sample_end,
+                "data": chunk
+            })
+
+    return chunks
+
+
+def generate_chunks(
+    data,
+    trace_chunk_size,
+    sample_chunk_size,
+    trace_step,
+    sample_step
+):
+    data_chunks = chunk_matrix(data, trace_chunk_size, sample_chunk_size, trace_step, sample_step)
+
+    merged = []
+    for chunk in data_chunks:
+        merged.append({
+            "trace_start": chunk["trace_start"],
+            "trace_end": chunk["trace_end"],
+            "sample_start": chunk["sample_start"],
+            "sample_end": chunk["sample_end"],
+            "data": chunk["data"],
+        })
+
+    return merged
+
+
+def save_chunks(
+    data,
+    trace_chunk_size,
+    sample_chunk_size,
+    trace_step=None,
+    sample_step=None
+):
+    out_dir = "../cv_data/"
+
+    chunks = generate_chunks(
+        data,
+        trace_chunk_size,
+        sample_chunk_size,
+        trace_step,
+        sample_step
+    )
+
+    for i, chunk in enumerate(chunks):
+        output_dir = "../cv_data/"
+
+        filename = (
+            f"chunk_{i:04d}_"
+            f"t{chunk['trace_start']}-{chunk['trace_end']}_"
+            f"s{chunk['sample_start']}-{chunk['sample_end']}.png"
+        )
+
+        h, w = chunk["data"].shape
+
+        plt.figure(figsize=(w / 100, h / 100), dpi=100, frameon=False)
+
+        plt.imshow(chunk["data"], aspect="auto", origin="lower",
+                cmap="Reds", alpha=0.35, interpolation="nearest")
+        plt.savefig(output_dir + filename, dpi=100, pad_inches=0)
+        plt.close()
 
 
 def normalize(data: np.ndarray, eps: float = 1e-12) -> np.ndarray:
@@ -112,18 +196,27 @@ def main() -> None:
 
     data, time_axis_s, dt_s = load_segy(file, ignore_geometry=True)
 
-    #data = normalize(data)
-    #data = downscale_by_averaging(data, 10)
+    data = normalize(data)
+    data = downscale_by_averaging(data, 10)
 
     #data, time_axis_s = apply_time_window(data, time_axis_s, None, None)
 
     if data.shape[1] == 0:
         raise ValueError("Selected time window is empty.")
 
-    #data = sobel_vertical(data)
+    data = sobel_vertical(data)
     #data = np.abs(data)
 
     plot_gather(data, time_axis_s, 0.99, "seismic", title="Segy Digest")
+
+    save_chunks(
+        data=data,
+        trace_chunk_size=256,
+        sample_chunk_size=256,
+        trace_step=128,
+        sample_step=128
+    )
+
 
 if __name__ == "__main__":
     main()
