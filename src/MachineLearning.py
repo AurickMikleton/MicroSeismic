@@ -44,9 +44,9 @@ model = nn.Sequential(
 )
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(model.parameters(), lr=0.001)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-epochs = 25
+epochs = 5
 
 for epoch in range(epochs):
     model.train()
