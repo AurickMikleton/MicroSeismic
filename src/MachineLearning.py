@@ -1,17 +1,87 @@
+import torch
+import torch.nn as nn
+import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 
 data_folder = "../cv_data/"
 
 transform = transforms.Compose([
-    transforms.Resize((256, 256)),
+    transforms.Resize((256, 256)), # Image size is already homgonize -> maybe remove
     transforms.ToTensor()
 ])
 
 dataset = datasets.ImageFolder(data_folder, transform=transform)
 loader = DataLoader(dataset, batch_size=32, shuffle=True)
 
+print("Classes:", dataset.classes)
+
 for images, labels in loader:
-    print(images.shape)   # [B, C, H, W]
+    print(images.shape)   # [Batch Size, Colors, Height, Width]
     print(labels.shape)
     break
+
+
+model = nn.Sequential(
+    # Not what the convolustion ares
+    # But Google said this was the shit
+    nn.Conv2d(3, 16, kernel_size=3, padding=1),  # [Batch Size, 3, 256, 256] -> [Batch Size, 16, 256, 256]
+    nn.ReLU(),
+    nn.MaxPool2d(2),                             # [Batch Size, 16, 128, 128]
+
+    nn.Conv2d(16, 32, kernel_size=3, padding=1),
+    nn.ReLU(),
+    nn.MaxPool2d(2),                             # -> [Batch Size, 32, 64, 64]
+
+    nn.Conv2d(32, 64, kernel_size=3, padding=1),
+    nn.ReLU(),
+    nn.MaxPool2d(2),                             # -> [Batch Size, 64, 32, 32]
+
+    # I don't like shape anymore
+    nn.Flatten(),
+    nn.Linear(64 * 32 * 32, 256),
+    nn.ReLU(),
+    nn.Linear(256, 2)
+)
+
+# borrowed for debugging -> Stack Overflow
+def print_sizes(model, input_tensor):
+    output = input_tensor
+    for m in model.children():
+        output = m(output)
+        print(m, output.shape)
+    return output
+
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.SGD(model.parameters(), lr=0.01)
+
+epochs = 5
+
+for epoch in range(epochs):
+    model.train()
+    running_loss = 0.0
+
+    for images, labels in loader:
+        optimizer.zero_grad()
+
+        print_sizes(model, images)
+        outputs = model(images)
+
+        loss = criterion(outputs, labels)
+
+        loss.backward()
+        optimizer.step()
+
+        running_loss += loss.item()
+
+    print(f"Epoch {epoch+1}/{epochs}, Loss: {running_loss / len(loader)}")
+
+
+
+
+
+
+
+
+
+
