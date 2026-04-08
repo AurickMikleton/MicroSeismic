@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import segyio
 
+file_number = 4
+file = f"../data/{file_number}.sgy"
 
 kernal = np.array(
     [[1.0, 2.0, 1.0],
@@ -106,7 +108,7 @@ def save_chunks(
         output_dir = "../cv_data/"
 
         filename = (
-            f"chunk_{i:04d}_"
+            f"{file_number}_chunk_{i:04d}_"
             f"t{chunk['trace_start']}-{chunk['trace_end']}_"
             f"s{chunk['sample_start']}-{chunk['sample_end']}.png"
         )
@@ -191,7 +193,6 @@ def plot_gather(
 
 
 def main() -> None:
-    file = "../data/1.sgy"
 
     print_info(file)
 

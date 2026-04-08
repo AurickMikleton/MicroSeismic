@@ -43,18 +43,10 @@ model = nn.Sequential(
     nn.Linear(256, 2)
 )
 
-# borrowed for debugging -> Stack Overflow
-def print_sizes(model, input_tensor):
-    output = input_tensor
-    for m in model.children():
-        output = m(output)
-        print(m, output.shape)
-    return output
-
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(model.parameters(), lr=0.01)
+optimizer = optim.SGD(model.parameters(), lr=0.001)
 
-epochs = 1
+epochs = 25
 
 for epoch in range(epochs):
     model.train()
@@ -63,7 +55,6 @@ for epoch in range(epochs):
     for images, labels in loader:
         optimizer.zero_grad()
 
-        #print_sizes(model, images)
         outputs = model(images)
 
         loss = criterion(outputs, labels)
