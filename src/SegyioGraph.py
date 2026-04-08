@@ -114,6 +114,7 @@ def save_chunks(
         h, w = chunk["data"].shape
 
         plt.figure(figsize=(w / 100, h / 100), dpi=100, frameon=False)
+        plt.axis("off")
 
         plt.imshow(chunk["data"], aspect="auto", origin="lower",
                 cmap="Reds", alpha=0.35, interpolation="nearest")
