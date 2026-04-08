@@ -114,9 +114,6 @@ def train_model(model, loader, optimizer, criterion, epochs=5) -> ResNet:
 
 model = train_model(model, loader, optimizer, criterion=criterion)
 
-
-# test
-
 model.eval()
 with torch.no_grad():
     images, labels = next(iter(loader))
