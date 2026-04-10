@@ -15,6 +15,21 @@ _Add screenshots, gifs, or demo images here if applicable._
 - Cross-platform
 - Clean architecture
 
+## Dependencies
+
+- openpyxl
+- matplotlib
+- numpy
+- segyio
+- pandas
+- torch
+- torchvision
+- scikit-learn
+
+```bash
+pip install openpyxl matplotlib numpy segyio pandas torch torchvision scikit-learn
+```
+
 ## Installation
 
 ### Clone
