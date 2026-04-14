@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MicroSeismic Classifier — CSU Geothermal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/main.css" />
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- ── Header ─────────────────────────────────────────────── -->
+    <header class="site-header">
+      <div class="header-inner">
+        <div class="header-brand">
+          <div class="brand-icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 24 L10 12 L16 18 L20 8 L28 24" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="16" cy="18" r="2.5" fill="currentColor" opacity="0.6"/>
+              <circle cx="20" cy="8"  r="2.5" fill="currentColor"/>
+            </svg>
+          </div>
+          <div>
+            <span class="brand-title">MicroSeismic</span>
+            <span class="brand-sub">Event Classifier</span>
+          </div>
+        </div>
+
+        <div class="header-status" id="deviceBadge">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="deviceLabel">Loading…</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Main ───────────────────────────────────────────────── -->
+    <main class="main-grid">
+
+      <!-- ── LEFT: Predict ──────────────────────────────────── -->
+      <section class="card predict-card">
+        <h2 class="card-title">
+          <svg viewBox="0 0 20 20" fill="none" class="card-icon" aria-hidden="true">
+            <path d="M3 17h14M3 12l4-4 3 3 4-6 3 4" stroke="currentColor" stroke-width="1.8"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Classify Image
+        </h2>
+
+        <div class="upload-zone" id="uploadZone" tabindex="0" role="button"
+             aria-label="Upload seismic image">
+          <input type="file" id="fileInput" accept="image/*" hidden />
+          <div class="upload-idle" id="uploadIdle">
+            <div class="upload-icon">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="6" y="6" width="36" height="36" rx="8" stroke="currentColor"
+                      stroke-width="2" stroke-dasharray="5 3"/>
+                <path d="M24 30V18M18 24l6-6 6 6" stroke="currentColor" stroke-width="2.2"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p class="upload-label">Drop a seismic chunk image here</p>
+            <p class="upload-hint">or <span class="link-btn">browse files</span> · PNG / JPG</p>
+          </div>
+          <img id="previewImg" class="preview-img hidden" alt="Preview" />
+        </div>
+
+        <button class="btn btn-primary" id="predictBtn" disabled>
+          Run Classification
+        </button>
+
+        <!-- Result panel -->
+        <div class="result-panel hidden" id="resultPanel">
+          <div class="result-header">
+            <span class="result-label">Prediction</span>
+            <span class="result-badge" id="resultBadge"></span>
+          </div>
+          <div class="confidence-row">
+            <span class="conf-label">Confidence</span>
+            <span class="conf-value" id="confValue"></span>
+          </div>
+          <div class="prob-bars" id="probBars"></div>
+        </div>
+      </section>
+
+      <!-- ── RIGHT: Train ───────────────────────────────────── -->
+      <section class="card train-card">
+        <h2 class="card-title">
+          <svg viewBox="0 0 20 20" fill="none" class="card-icon" aria-hidden="true">
+            <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M10 6v4l2.5 2.5" stroke="currentColor" stroke-width="1.8"
+                  stroke-linecap="round"/>
+          </svg>
+          Train Model
+        </h2>
+
+        <!-- Dataset stats -->
+        <div class="stats-row" id="statsRow">
+          <div class="stat-chip" id="statEvent">
+            <span class="stat-num">—</span>
+            <span class="stat-lbl">event</span>
+          </div>
+          <div class="stat-chip" id="statNonEvent">
+            <span class="stat-num">—</span>
+            <span class="stat-lbl">non-event</span>
+          </div>
+          <div class="stat-chip" id="statTotal">
+            <span class="stat-num">—</span>
+            <span class="stat-lbl">total</span>
+          </div>
+        </div>
+
+        <!-- Epoch slider -->
+        <div class="field-group">
+          <label class="field-label" for="epochSlider">
+            Epochs — <strong id="epochDisplay">10</strong>
+          </label>
+          <input type="range" id="epochSlider" class="epoch-slider"
+                 min="1" max="50" value="10" step="1" />
+          <div class="slider-ticks">
+            <span>1</span><span>10</span><span>25</span><span>50</span>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" id="trainBtn">
+          Start Training
+        </button>
+
+        <!-- Progress -->
+        <div class="progress-section" id="progressSection" style="display:none">
+          <div class="progress-meta">
+            <span id="progressLabel">Epoch 0 / 0</span>
+            <span id="lossLabel" class="loss-badge">loss —</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill" style="width:0%"></div>
+          </div>
+        </div>
+
+        <!-- Loss chart -->
+        <div class="chart-wrap" id="chartWrap" style="display:none">
+          <div class="chart-title">Training Loss</div>
+          <canvas id="lossCanvas" class="loss-canvas"></canvas>
+        </div>
+
+        <!-- Done banner -->
+        <div class="done-banner hidden" id="doneBanner">
+          Model trained successfully — ready to classify.
+        </div>
+
+        <!-- Error banner -->
+        <div class="error-banner hidden" id="errorBanner"></div>
+      </section>
+
+    </main>
+
+    <!-- ── Footer ─────────────────────────────────────────────── -->
+    <footer class="site-footer">
+      CSU Geothermal · ResNet Microseismic Classifier
+    </footer>
+
+  </div>
+
+  <script src="/static/js/home_screen.js"></script>
+</body>
+</html>
