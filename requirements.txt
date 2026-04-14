@@ -1,0 +1,12 @@
+flask
+flask-cors
+Pillow
+segyio
+numpy
+h5py
+pandas
+matplotlib
+openpyxl
+torch
+torchvision
+python-dotenv
