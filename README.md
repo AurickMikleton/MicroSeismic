@@ -25,9 +25,13 @@ _Add screenshots, gifs, or demo images here if applicable._
 - torch
 - torchvision
 - scikit-learn
+- flask / flask-cors
+- PIL
+- h5py
+- python-dotenv
 
 ```bash
-pip install openpyxl matplotlib numpy segyio pandas torch torchvision scikit-learn
+pip install openpyxl matplotlib numpy segyio pandas torch torchvision scikit-learn python-dotenv flask flask-cors Pillow h5py
 ```
 
 ## Installation
@@ -42,5 +46,5 @@ cd your-repo
 ### Run
 
 ```bash
-python SeismicGraph.py
+python app.py
 ```
