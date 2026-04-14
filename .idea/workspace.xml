@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="96f6f184-913d-44d3-b1f7-9020d47e39fb" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/api/home_screen.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/css/main.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/js/home_screen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/MachineLearning.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/MachineLearning.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,7 +39,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "new-cnn",
+    "git-widget-placeholder": "add-reqs",
     "last_opened_file_path": "/Users/couchroomkid/Desktop/Work/devnet/Geothermal_Data/MicroSeismic"
   }
 }]]></component>
