@@ -1,19 +1,18 @@
 # Microseismic Classification
 
-> Classification AI to determine where seismic events are given a HDF5 file.
+> Classification AI to determine where seismic events are given a SEGY file.
 
-A slightly longer description that explains what the project does, who it is for, and what problem it solves.
+Using data from DAS sensors collecting seismic data, this project finds microseismic events. It uses a DSP with raking, normilization and Sobel edge detection, then uses a ResNet CNN to do a binary classification on chunked segments of the data. This data comes from the Univeristy of Utah Forge project.
 
 ## Screenshots
 
-_Add screenshots, gifs, or demo images here if applicable._
+![Alt text](/screenshots/web-example.jpg?raw=true "Web")
 
 ## Features
 
-- Fast and lightweight
-- Easy to build
-- Cross-platform
-- Clean architecture
+- Binary classification
+- Dataset preprocessing
+- Web interface
 
 ## Dependencies
 
@@ -40,7 +39,6 @@ pip install openpyxl matplotlib numpy segyio pandas torch torchvision scikit-lea
 
 ```bash
 git clone https://github.com/AurickMikleton/MicroSeismic.git
-cd your-repo
 ```
 
 ### Run
