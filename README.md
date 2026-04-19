@@ -6,9 +6,9 @@ Using data from DAS sensors collecting seismic data, this projects find microsei
 
 ## Screenshots
 
-_Add screenshots, gifs, or demo images here if applicable._
+![Alt text](/screenshots/sample-data-chunk.png?raw=true "Data")
 
-![Alt text](/screenshots/sample-data-chunk.png?raw=true "Optional Title")
+![Alt text](/screenshots/web-example.jpg?raw=true "Web")
 
 ## Features
 
