@@ -1,12 +1,10 @@
 # Microseismic Classification
 
-> Classification AI to determine where seismic events are given a HDF5 file.
+> Classification AI to determine where seismic events are given a SEGY file.
 
-Using data from DAS sensors collecting seismic data, this projects find microseismic events. It uses a combination a DSP like raking, normilization and Sobel edge detection. It then uses a ResNet CNN to do a binary classificstion on chunked segments of the data. This data comss from the Univeristy of Utah Forge project.
+Using data from DAS sensors collecting seismic data, this project finds microseismic events. It uses a DSP with raking, normilization and Sobel edge detection, then uses a ResNet CNN to do a binary classification on chunked segments of the data. This data comes from the Univeristy of Utah Forge project.
 
 ## Screenshots
-
-![Alt text](/screenshots/sample-data-chunk.png?raw=true "Data")
 
 ![Alt text](/screenshots/web-example.jpg?raw=true "Web")
 
