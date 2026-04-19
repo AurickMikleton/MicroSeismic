@@ -8,6 +8,8 @@ Using data from DAS sensors collecting seismic data, this projects find microsei
 
 _Add screenshots, gifs, or demo images here if applicable._
 
+![Alt text](/screenshots/sample-data-chunk.png?raw=true "Optional Title")
+
 ## Features
 
 - Binary classification
